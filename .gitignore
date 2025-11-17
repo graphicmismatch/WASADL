@@ -41,7 +41,7 @@
 *.su
 *.idb
 *.pdb
-
+*.wav
 # Kernel Module Compile Results
 *.mod*
 *.cmd
@@ -50,6 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
+/lib
 # debug information files
 *.dwo
