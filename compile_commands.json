@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Wshadow",
+      "-O2",
+      "-I./lib/libsndfile/include",
+      "-I./lib/tinyexpr",
+      "-c",
+      "-o",
+      "WASADL.o",
+      "WASADL.cpp"
+    ],
+    "directory": "/home/vlad/c/WASADL",
+    "file": "/home/vlad/c/WASADL/WASADL.cpp",
+    "output": "/home/vlad/c/WASADL/WASADL.o"
+  }
+]
