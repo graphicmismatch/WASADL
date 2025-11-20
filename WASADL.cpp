@@ -20,7 +20,14 @@ typedef struct SoundData {
   double *data;
 } SoundData;
 
-typedef enum NormalizationMode { PEAKS, LUFS, RMS, CLIPPING } NormalizationMode;
+typedef enum NormalizationMode {
+  PEAKS,
+  LUFS,
+  RMS,
+  HARD_CLIPPING,
+  SOFT_CLIPPING_TANH,
+  SOFT_CLIPPING_CUBIC
+} NormalizationMode;
 
 int main() {
   printf("WASADL %s\n", VERSION);
@@ -38,6 +45,8 @@ int main() {
   free(r);
   return EXIT_SUCCESS;
 }
+
+// Populates The SoundData struct.
 void createSoundData(struct SoundData *out, int samplerate, double seconds,
                      int channels, long sampleCount, double *data) {
   out->samplerate = samplerate;
@@ -46,12 +55,16 @@ void createSoundData(struct SoundData *out, int samplerate, double seconds,
   out->sampleCount = sampleCount;
   out->data = data;
 }
+
+// Populates a SequenceElement
 void createSequenceElement(struct SequenceElement *out, long sampleCount,
                            long startSampleNumber, double *data) {
   out->startSampleNumber = startSampleNumber;
   out->sampleCount = sampleCount;
   out->data = data;
 }
+
+// Converts a Sequence to SoundData
 void sequenceToSoundData(SoundData *out, Sequence seq) {
   out->data = (double *)malloc(seq.lastSampleCount * sizeof(double));
   for (int i = 0; i < seq.sequenceCount; i++) {
@@ -66,6 +79,8 @@ void sequenceToSoundData(SoundData *out, Sequence seq) {
 double getTimeFromSamples(int nsamples, int samplerate) {
   return (double)nsamples / (double)samplerate;
 }
+
+// gets the peak value
 long findPeak(double *samples, int sampleCount, bool inverse) {
   long ind = 0;
   float val = samples[0];
@@ -110,7 +125,7 @@ int write_wav_from_doubles(const char *filename, const double *samples,
   return 0;
 }
 
-void normalizeSound(SoundData *out, NormalizationMode mode) {
+void normalizeSound(SoundData *out, double threshold, NormalizationMode mode) {
   long peakInd = findPeak(out->data, out->sampleCount, false);
   long revPeakInd = findPeak(out->data, out->sampleCount, true);
   double peak = abs((out->data)[peakInd]);
@@ -121,7 +136,16 @@ void normalizeSound(SoundData *out, NormalizationMode mode) {
   }
 }
 
-void peaksNormalization() {}
+void peaksNormalization(SoundData *out, double threshold, long peakIndex) {
+  double peakVal = out->data[peakIndex] if (peakVal > 0.0d) {
+    double scale = threshold / peakVal;
+    for (int i = 0; i < (out->sampleCount); i++) {
+      out->data[i] *= scale;
+    }
+  }
+}
 void LUFSNormalization() {}
 void RMSNormalization() {}
-void ClippingNormalization() {}
+void hardClippingNormalization() {}
+void tanh_softClippingNormalization() {}
+void cubic_softClippingNormalization() {}
